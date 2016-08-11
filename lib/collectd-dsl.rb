@@ -24,13 +24,25 @@ module Collectd
       method_name.split("_").map{|w| w.capitalize }.join("")
     end
 
-    def method_missing method_name, *args
-      mapped_args = args.map do |a|
-        if a.class == String 
+    def array_to_string(*args)
+      args.map do |a|
+        if a.class == String
           "\"" + a.to_s + "\""
+        elsif a.class == Array
+          r = []
+          a.each do |v|
+            r.push(array_to_string(v))
+          end
+          r.join(" ")
         else
           a.to_s
         end
+      end.join(" ")
+    end
+
+    def method_missing method_name, *args
+      mapped_args = args.map do |a|
+        array_to_string(a)
       end.join(" ")
         
       mapped_args = (" " + mapped_args) unless mapped_args.empty?

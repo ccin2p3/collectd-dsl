@@ -38,5 +38,13 @@ describe Collectd::DSL do
       config.should == "<Plugin>\n</Plugin>\n"
 
     end
+    it "arrays" do
+      config = Collectd::DSL.parse do
+        plugin do
+          driver_option ["port", 1234]
+        end
+      end
+      config.should == "<Plugin>\n\tDriverOption \"port\" 1234\n</Plugin>\n"
+    end
   end
 end
